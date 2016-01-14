@@ -1,7 +1,7 @@
 '''
 corpus_parser.py
 created 2016-1-10 by Sam Kamenetz
-
+s
 Class handles processing the texts, and organizing them into a SQLLITE database.
 '''
 from bs4 import BeautifulSoup
