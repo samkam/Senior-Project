@@ -20,23 +20,61 @@ class WebDB:
         self.cur = self.cxn.cursor()
         
         
-        self.execute("""CREATE TABLE IF NOT EXISTS CachedURL (
+        self.execute("""CREATE TABLE IF NOT EXISTS Documents (
                                  id  INTEGER PRIMARY KEY,
-                                 url VARCHAR,
-                                 title VARCHAR,
-                                 docType VARCHAR
+                                 fimficID INTEGER,
+                                 title TEXT,
+                                 url TEXT,
+
+                                 likes INTEGER,
+                                 dislikes INTEGER,
+                                 comments INTEGER,
+                                 views INTEGER,
+                                 wordCount INTEGER,
+                                 contentRating INTEGER
+                                 chapterCount INTEGER
+                                 dateModified TEXT,
+
+                                 description TEXT,
+                                 shortDescription TEXT,
+
+
                             );""")
-                            
-        self.execute("""CREATE TABLE IF NOT EXISTS URLToItem (
+
+        self.execute("""CREATE TABLE IF NOT EXISTS Authors (
+                                id  INTEGER PRIMARY KEY,
+                                fimficID INTEGER,
+                                name TEXT
+                            );""")
+        self.execute("""CREATE TABLE IF NOT EXISTS DocumentToTags (
                                  id  INTEGER PRIMARY KEY,
-                                 urlID INTEGER,
-                                 itemID INTEGER
+                                 docID INTEGER,
+                                 second_person BOOLEAN,
+                                 adventure BOOLEAN,
+                                 alt_universe BOOLEAN,
+                                 anthro BOOLEAN,
+                                 comedy BOOLEAN,
+                                 crossover BOOLEAN,
+                                 dark BOOLEAN,
+                                 drama BOOLEAN,
+                                 eq_girls BOOLEAN,
+                                 horror BOOLEAN,
+                                 human BOOLEAN,
+                                 mystery BOOLEAN,
+                                 random BOOLEAN,
+                                 romance BOOLEAN,
+                                 sad BOOLEAN,
+                                 sci_fi BOOLEAN,
+                                 slice_of_life BOOLEAN,
+                                 thriller BOOLEAN,
+                                 tragedy BOOLEAN
+
                             );""")
         
-        self.execute("""CREATE TABLE IF NOT EXISTS Item (
+        self.execute("""CREATE TABLE IF NOT EXISTS AuthorToDocument (
                                  id  INTEGER PRIMARY KEY,
-                                 name VARCHAR,
-                                 type VARCHAR
+                                 authorID INTEGER,
+                                 docID INTEGER
                             );""")
 
     def _quote(self, text):
@@ -64,6 +102,7 @@ class WebDB:
         self.cxn.commit()
 
         return res
+    def
 
 
     ####----------####
