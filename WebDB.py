@@ -7,7 +7,7 @@ http://jimi.ithaca.edu/CourseWiki/index.php/CS490_S15_Schedule
 
 import sqlite3
 import re
-
+#poop
 class WebDB:
 
     def __init__(self, dbfile):
