@@ -1,0 +1,51 @@
+{
+   "20685":{
+      "author":{
+         "id":"26190",
+         "name":"PhantomFox"
+      },
+      "categories":{
+         "Adventure":false,
+         "Alternate Universe":false,
+         "Anthro":false,
+         "Comedy":false,
+         "Crossover":false,
+         "Dark":false,
+         "Human":false,
+         "Random":false,
+         "Romance":false,
+         "Sad":false,
+         "Slice of Life":true,
+         "Tragedy":false
+      },
+      "chapter_count":1,
+      "chapters":[
+         {
+            "date_modified":1348680464,
+            "id":63408,
+            "link":"http://www.fimfiction.net/story/20685/1/sunny-skies-all-day-long/-",
+            "title":"Chapter 1",
+            "views":44911,
+            "words":8536
+         }
+      ],
+      "comments":529,
+      "content_rating":0,
+      "content_rating_text":"Everyone",
+      "date_modified":1334414541,
+      "description":"Princess Celestia tires of constantly being surrounded by decorum, deference, and formality, and decides to take a day off from being Princess. But visiting Ponyville incognito is harder than she expects. Will she be able to fit in and make friends without blowing her cover?",
+      "dislikes":81,
+      "full_image":"http://www.fimfiction-static.net/images/story_images/20685.png",
+      "id":20685,
+      "image":"http://www.fimfiction-static.net/images/story_images/20685_r.png",
+      "likes":5079,
+      "path":"epub/p/phantomfox-26190/sunny_skies_all_day_long-20685.epub",
+      "short_description":"Celestia’s Day Off",
+      "status":"Complete",
+      "title":"Sunny Skies All Day Long",
+      "total_views":44911,
+      "url":"http://www.fimfiction.net/story/20685/sunny-skies-all-day-long",
+      "views":44911,
+      "words":8536
+   }
+}

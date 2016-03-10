@@ -9,6 +9,8 @@ from epub_conversion.utils import *
 
 import json
 import sqlite3
+import WebDB
+
 
 def epub_to_txt(infile, outfile):
     #Convert epub into list of HTML strings
@@ -27,10 +29,30 @@ def epub_to_txt(infile, outfile):
 def populate_DB(infile, db_name):
 
     with open(infile, 'r') as f:
-        json_dict =  json.load(f)
+        json_dict = json.load(f)
+        print(json_dict)
+    db = WebDB.WebDB(db_name)
 
+    for fimficID, data in iter(json_dict.values()):
+        auth_dic = data["author"]
+        auth_query="INSERT INTO Authors(fimficID, name) VALUES ({},{})".format(auth_dic["id"],auth_dic["name"])
+        res = db.execute(auth_query)
+        print(res)
+        tag_dic = data["categories"]
+        #problem: tag names don't necessarily match sql names for tags
+        tag_query = '''INSERT INTO DocumentsToTags (docfimficID,{keys}) VALUES({fimfic},{values})'''
+        tag_query = tag_query.format(keys=",".join(tag_dic.keys()), values=",".join(tag_dic.values(),fimfic=fimficID) )
+        db.execute(tag_query)
+
+        #remove items we don't care about to make my life easeir
+        data.pop("author")
+        data.pop("categories")
+        data.pop("chapters")
+        doc_query = "INSERT INTO Documents(fimficID,{keys}) VALUES({fimfic},{values})"
+        doc_query = doc_query.format(fimfic=fimficID,keys=",".join(data.keys()),values=",".join(data.values()))
+        db.execute(doc_query)
 
 def main():
     #epub_to_txt("EPUBS/Metamorphosis-jackson.epub","output_test.txt")
-    populate_DB("about.json", "")
+    populate_DB("index.json", "")
 main()

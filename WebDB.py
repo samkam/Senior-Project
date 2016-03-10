@@ -8,6 +8,8 @@ http://jimi.ithaca.edu/CourseWiki/index.php/CS490_S15_Schedule
 import sqlite3
 import re
 #poop
+def hello():
+    print(hello)
 class WebDB:
 
     def __init__(self, dbfile):
@@ -23,22 +25,25 @@ class WebDB:
         self.execute("""CREATE TABLE IF NOT EXISTS Documents (
                                  id  INTEGER PRIMARY KEY,
                                  fimficID INTEGER,
-                                 title TEXT,
-                                 url TEXT,
 
-                                 likes INTEGER,
-                                 dislikes INTEGER,
+                                 author TEXT,
+                                 chapter_count INTEGER,
                                  comments INTEGER,
-                                 views INTEGER,
-                                 wordCount INTEGER,
-                                 contentRating INTEGER
-                                 chapterCount INTEGER
-                                 dateModified TEXT,
-
+                                 content_rating INTEGER,
+                                 content_rating_text TEXT,
+                                 date_modified TEXT,
                                  description TEXT,
+                                 dislikes INTEGER,
+                                 full_image TEXT,
+                                 likes INTEGER,
+                                 path TEXT,
                                  shortDescription TEXT,
-
-
+                                 status TEXT,
+                                 title TEXT,
+                                 total_views INTEGER,
+                                 url TEXT,
+                                 views INTEGER,
+                                 words INTEGER,
                             );""")
 
         self.execute("""CREATE TABLE IF NOT EXISTS Authors (
@@ -48,7 +53,7 @@ class WebDB:
                             );""")
         self.execute("""CREATE TABLE IF NOT EXISTS DocumentToTags (
                                  id  INTEGER PRIMARY KEY,
-                                 docID INTEGER,
+                                 docfimficID INTEGER,
                                  second_person BOOLEAN,
                                  adventure BOOLEAN,
                                  alt_universe BOOLEAN,
@@ -73,8 +78,8 @@ class WebDB:
         
         self.execute("""CREATE TABLE IF NOT EXISTS AuthorToDocument (
                                  id  INTEGER PRIMARY KEY,
-                                 authorID INTEGER,
-                                 docID INTEGER
+                                 authorfimficID INTEGER,
+                                 docfimficID INTEGER
                             );""")
 
     def _quote(self, text):
@@ -102,7 +107,6 @@ class WebDB:
         self.cxn.commit()
 
         return res
-    def
 
 
     ####----------####
@@ -154,7 +158,14 @@ class WebDB:
             for i in reslist:
                 out.append(i)
             return out#[0]
-
+    def lookup_doc_by_fimficID(self, fimficID):
+        sql = "SELECT * FROM Documents WHERE fimficID={}".format(fimficID)
+        res = self.execute(sql)
+        reslist = res.fetchone()
+        if reslist == []:
+            return None
+        else:
+            return reslist[0][0] #docID probably
     def lookupItem(self, name, itemType):
         """
         Returns a Item ID for the row
@@ -271,6 +282,11 @@ class WebDB:
 
         res = self.execute(sql)
         return self.cur.lastrowid
+    def insert_document(self,fimficID, dic):
+        native_doc_id = self.lookup_doc_by_fimficID(fimficID)
+        if native_doc_id is not None:
+            return native_doc_id
+        sql = """INSERT INTO Documents """
 
     def insertURLToItem(self, urlID, itemID):
         """
@@ -289,7 +305,7 @@ class WebDB:
 
         res = self.execute(sql)
         return self.cur.lastrowid
-
+'''
 if __name__=='__main__':
     db = WebDB('test.db')
     urlID  = db.insertCachedURL("http://jimi.ithaca.edu/", "text/html", "JimiLab :: Ithaca College")
@@ -299,5 +315,4 @@ if __name__=='__main__':
     (url, docType, title) =  db.lookupCachedURL_byID(urlID);
 
     print("Page Info: ",url,"\t" , docType,"\t", title)
-
-    
+'''

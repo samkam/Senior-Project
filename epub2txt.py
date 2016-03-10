@@ -16,6 +16,7 @@ class GetContent(HTMLParser.HTMLParser):
 		self.content = ""
 
 	def handle_data(self, data):
+		pass
 		self.content += data
 
 re_digits = re.compile(r'(\d+)')
