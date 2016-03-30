@@ -14,14 +14,23 @@ import os.path
 import codecs
 import epub
 import pywin32_system32
-
+import zipfile
 def epub_to_string(infile):
-    out = ""
+    out = b""
+    with zipfile.ZipFile(infile) as z:
+        for filename in z.namelist():
+            if filename.endswith(".html"):
+                with z.open(filename) as f:
+                    out += f.read()
+    return out
+    '''
     with epub.open_epub(infile) as book:
         #opf is file that contains info and structure on all other files in epub zip
         for item in book.opf.manifest.values():
+            print(item)
             out += book.read_item(item)
     return out
+    '''
 
 def epub_to_txt(infile, outfile):
     #Convert epub into list of HTML strings
@@ -29,7 +38,7 @@ def epub_to_txt(infile, outfile):
     #lines = convert_epub_to_lines(epub)
     lines = epub_to_string(infile)
     #Remove HTML tags and keep raw text
-    beautiful_soup = BeautifulSoup("".join(lines), "html.parser")
+    beautiful_soup = BeautifulSoup(lines, "html.parser")
     out = beautiful_soup.get_text(" ")
     #Write to file
     with codecs.open(outfile, 'w',encoding="utf-16") as f:
