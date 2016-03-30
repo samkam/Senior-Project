@@ -7,9 +7,6 @@ http://jimi.ithaca.edu/CourseWiki/index.php/CS490_S15_Schedule
 
 import sqlite3
 import re
-#poop
-def hello():
-    print(hello)
 class WebDB:
 
     def __init__(self, dbfile):
@@ -20,6 +17,7 @@ class WebDB:
         self.dbfile = dbfile
         self.cxn = sqlite3.connect(dbfile)
         self.cur = self.cxn.cursor()
+
         
         
         self.execute("""CREATE TABLE IF NOT EXISTS Documents (
@@ -35,15 +33,16 @@ class WebDB:
                                  description TEXT,
                                  dislikes INTEGER,
                                  full_image TEXT,
+                                 image TEXT,
                                  likes INTEGER,
                                  path TEXT,
-                                 shortDescription TEXT,
+                                 short_description TEXT,
                                  status TEXT,
                                  title TEXT,
                                  total_views INTEGER,
                                  url TEXT,
                                  views INTEGER,
-                                 words INTEGER,
+                                 words INTEGER
                             );""")
 
         self.execute("""CREATE TABLE IF NOT EXISTS Authors (
@@ -54,25 +53,26 @@ class WebDB:
         self.execute("""CREATE TABLE IF NOT EXISTS DocumentToTags (
                                  id  INTEGER PRIMARY KEY,
                                  docfimficID INTEGER,
-                                 second_person BOOLEAN,
-                                 adventure BOOLEAN,
-                                 alt_universe BOOLEAN,
-                                 anthro BOOLEAN,
-                                 comedy BOOLEAN,
-                                 crossover BOOLEAN,
-                                 dark BOOLEAN,
-                                 drama BOOLEAN,
-                                 eq_girls BOOLEAN,
-                                 horror BOOLEAN,
-                                 human BOOLEAN,
-                                 mystery BOOLEAN,
-                                 random BOOLEAN,
-                                 romance BOOLEAN,
-                                 sad BOOLEAN,
-                                 sci_fi BOOLEAN,
-                                 slice_of_life BOOLEAN,
-                                 thriller BOOLEAN,
-                                 tragedy BOOLEAN
+                                 nd_Person BOOLEAN,
+                                 Adventure BOOLEAN,
+                                 Alternate_Universe BOOLEAN,
+                                 Anthro BOOLEAN,
+                                 Comedy BOOLEAN,
+                                 Crossover BOOLEAN,
+                                 Dark BOOLEAN,
+                                 Drama BOOLEAN,
+                                 Equestria_Girls BOOLEAN,
+                                 Horror BOOLEAN,
+                                 Human BOOLEAN,
+                                 Mystery BOOLEAN,
+                                 Random BOOLEAN,
+                                 Romance BOOLEAN,
+                                 Sad BOOLEAN,
+                                 Sci_Fi BOOLEAN,
+
+                                 Slice_of_Life BOOLEAN,
+                                 Thriller BOOLEAN,
+                                 Tragedy BOOLEAN
 
                             );""")
         
@@ -97,15 +97,21 @@ class WebDB:
 
         text = re.sub("''", "'", text)
         return text
-
-    def execute(self, sql):
-        """
-        Execute an arbitrary SQL command on the underlying database.
-        """
-        #print(sql)
         res = self.cur.execute(sql)
         self.cxn.commit()
 
+        return res
+
+    def execute(self, sql, params=None):
+        """
+        Execute an arbitrary SQL command on the underlying database.
+        """
+        #print(sql, flush=True)
+        if params == None:
+            res = self.cur.execute(sql)
+        else:
+            res = self.cur.execute(sql,params)
+        self.cxn.commit()
         return res
 
 
@@ -305,6 +311,31 @@ class WebDB:
 
         res = self.execute(sql)
         return self.cur.lastrowid
+#### my stuff here####
+    def lookup_author_by_authorId(self,fimficid):
+        sql = "select id from Authors where fimficID={}".format(fimficid)
+        res = self.execute(sql)
+        reslist = res.fetchall()
+        if reslist == []:
+            return None
+        else:
+            return reslist[0]
+    def lookup_doc_by_doc_ID(self,doc_id):
+        sql = "select id from Documents where fimficID={}".format(fimficid)
+        res = self.execute(sql)
+        reslist = res.fetchall()
+        if reslist == []:
+            return None
+        else:
+            return reslist[0]
+    def lookup_tags_by_doc_ID(self,doc_ID ):
+        sql = "select id from Documents where fimficID={}".format(fimficid)
+        res = self.execute(sql)
+        reslist = res.fetchall()
+        if reslist == []:
+            return None
+        else:
+            return reslist[0]
 '''
 if __name__=='__main__':
     db = WebDB('test.db')

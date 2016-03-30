@@ -5,18 +5,25 @@
          "name":"PhantomFox"
       },
       "categories":{
-         "Adventure":false,
-         "Alternate Universe":false,
-         "Anthro":false,
-         "Comedy":false,
-         "Crossover":false,
-         "Dark":false,
-         "Human":false,
-         "Random":false,
-         "Romance":false,
-         "Sad":false,
-         "Slice of Life":true,
-         "Tragedy":false
+               "2nd Person": false,
+               "Adventure": false,
+               "Alternate Universe": false,
+               "Anthro": false,
+               "Comedy": false,
+               "Crossover": false,
+               "Dark": false,
+               "Drama": false,
+               "Equestria Girls": false,
+               "Horror": false,
+               "Human": false,
+               "Mystery": false,
+               "Random": true,
+               "Romance": true,
+               "Sad": false,
+               "Sci-Fi": false,
+               "Slice of Life": false,
+               "Thriller": false,
+               "Tragedy": false
       },
       "chapter_count":1,
       "chapters":[
@@ -48,4 +55,5 @@
       "views":44911,
       "words":8536
    }
+
 }
