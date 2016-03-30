@@ -164,14 +164,6 @@ class WebDB:
             for i in reslist:
                 out.append(i)
             return out#[0]
-    def lookup_doc_by_fimficID(self, fimficID):
-        sql = "SELECT * FROM Documents WHERE fimficID={}".format(fimficID)
-        res = self.execute(sql)
-        reslist = res.fetchone()
-        if reslist == []:
-            return None
-        else:
-            return reslist[0][0] #docID probably
     def lookupItem(self, name, itemType):
         """
         Returns a Item ID for the row
@@ -312,7 +304,7 @@ class WebDB:
         res = self.execute(sql)
         return self.cur.lastrowid
 #### my stuff here####
-    def lookup_author_by_authorId(self,fimficid):
+    def lookup_author_by_authorID(self,fimficid):
         sql = "select id from Authors where fimficID={}".format(fimficid)
         res = self.execute(sql)
         reslist = res.fetchall()
@@ -321,15 +313,32 @@ class WebDB:
         else:
             return reslist[0]
     def lookup_doc_by_doc_ID(self,doc_id):
-        sql = "select id from Documents where fimficID={}".format(fimficid)
+        sql = "select * from Documents where fimficID={}".format(doc_id)
         res = self.execute(sql)
         reslist = res.fetchall()
         if reslist == []:
             return None
         else:
             return reslist[0]
+    def get_any_by_doc_ID(self,column_name, doc_id):
+        sql = "select {} from Documents where fimficID={}".format(column_name,doc_id)
+        res = self.execute(sql)
+        reslist = res.fetchall()
+        if reslist == []:
+            return None
+        else:
+            return reslist[0][0]
+    def get_all_docIDs(self):
+        sql = "select fimficID from Documents"
+        res = self.execute(sql)
+        reslist = res.fetchall()
+        if reslist == []:
+            return None
+        else:
+            z = [i[0] for i in reslist]
+            return z
     def lookup_tags_by_doc_ID(self,doc_ID ):
-        sql = "select id from Documents where fimficID={}".format(fimficid)
+        sql = "select * from TagsToDocuments where fimficID={}".format(doc_ID)
         res = self.execute(sql)
         reslist = res.fetchall()
         if reslist == []:

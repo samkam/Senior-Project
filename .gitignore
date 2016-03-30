@@ -2,3 +2,5 @@ output_test.txt
 epub2txt.py
 output.txt
 EPUBS/**
+raw_texts/**
+data.db
