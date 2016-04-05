@@ -338,7 +338,7 @@ class WebDB:
             z = [i[0] for i in reslist]
             return z
     def lookup_tags_by_doc_ID(self,doc_ID ):
-        sql = "select * from TagsToDocuments where fimficID={}".format(doc_ID)
+        sql = "select * from DocumentToTags where docfimficID={}".format(doc_ID)
         res = self.execute(sql)
         reslist = res.fetchall()
         if reslist == []:
