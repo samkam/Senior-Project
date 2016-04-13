@@ -345,6 +345,15 @@ class WebDB:
             return None
         else:
             return reslist[0]
+    def get_docs_by_tag(self,tagname):
+        sql = "SELECT docfimficID from DocumentToTags where {} = 1".format(tagname)
+        res = self.execute(sql)
+        reslist = res.fetchall()
+        if reslist == []:
+            return None
+        else:
+            z = [i[0] for i in reslist]
+            return z
 '''
 if __name__=='__main__':
     db = WebDB('test.db')

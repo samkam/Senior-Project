@@ -47,11 +47,16 @@ def epub_to_txt(infile, outfile):
 
 def populate_DB(infile, db_name):
 
-    with open(infile, 'r') as f:
+    with open(infile, 'r', errors="ignore") as f:
         json_dict = json.load(f)
     db = WebDB.WebDB(db_name)
+    i = 0
     for fimficID in json_dict.keys():
         data = json_dict[fimficID]
+        print("processing: {} :{}".format(i,data["title"]))
+        i +=1
+        if i > 15000:
+            break
         auth_dic = data["author"]
         if db.lookup_author_by_authorID(auth_dic["id"]) == None:
             auth_query="INSERT INTO Authors(fimficID, name) VALUES (?,?)"#.format(auth_dic["id"],auth_dic["name"])
@@ -89,9 +94,9 @@ def convert_epubs(epub_folder,output_folder):
         epub_to_txt(infile,outfile)
 def main():
     if not os.path.isfile("data.db"):
-        populate_DB("test_data.json", "data.db")
-    else:
-        if not os.path.isdir("raw_texts"):
-            epub_directory = "C:\\Users\samka\Downloads\misc documents\\fimfarchive-20151125\\"
-            convert_epubs(epub_directory,"raw_texts")
+        #populate_DB("test_data.json","data.db")
+        populate_DB("C:\\Users\samka\Downloads\misc documents\\fimfarchive-20151125\index.json", "data.db")
+    if not os.path.isdir("raw_texts"):
+        epub_directory = "C:\\Users\samka\Downloads\misc documents\\fimfarchive-20151125\\"
+        convert_epubs(epub_directory,"raw_texts")
 main()

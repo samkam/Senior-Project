@@ -43,7 +43,7 @@ clf = OneVsRestClassifier(MultinomialNB())#MultinomialNB()
 clf.fit(X_train_tfidf,processed_tags)
 
 test_docs = ["funny funny joke", "died sad joke tragedy funny", "lasers and robots"]
-X_test_counts = count_vect.transform(test_docs)
+X_test_counts = count_vect.transform(test_docs,)
 print("X_test_counts.shape")
 print(X_test_counts.shape)
 X_test_tfidf = tfidf_transformer.transform(X_test_counts)
