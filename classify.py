@@ -45,6 +45,47 @@ def select_sets_by_tag(numTrain, numTest, tags=["Adventure","Comedy","Romance","
     print("train size: {} test size: {}".format(len(train),len(test)))
     return out
 
+def select_by_trait(numTrain, numTest, trait_name="likes",tags=tag_names):
+    '''
+    select story ids for test and training by given trait (not random)
+    :param numTrain: number of training documents per tag
+    :param numTest: number of testing documents per tag
+    :param trait_name: trait to judge by (favorites, likes, dislikes, comments)
+    :param tags:
+    :return:
+    '''
+    limit = (numTrain +numTest)* len(tags)
+    story_ids = db.get_all_docIDs()#get_docIDs_by_top_trait(trait_name)
+    if limit > len(story_ids):
+        raise NameError("attempting to use set bigger than corpus")
+    # mother of all SQL statements
+    #the above is not even remotely true
+    subquery_string = """SELECT docfimficID FROM (
+        SELECT docfimficID,likes
+        FROM DocumentToTags
+        INNER JOIN Documents
+        on Documents.fimficID = DocumentToTags.docfimficID
+        Where {tag} = 1
+        Order By {trait} desc
+        limit {numDocs})
+    """
+    z = [subquery_string.format(tag=i,trait=trait_name,numDocs=numTest+numTrain) for i in tags]
+    sql = "\n UNION \n".join(z)
+    res = db.execute(sql)
+    reslist = res.fetchall()
+    if reslist == []:
+        NameError("no results :((((( something went horribly wrong")
+    else:
+        reslist = [i[0] for i in reslist]
+        train = []
+        test = []
+        for i, tag in enumerate(tags):
+            offset = (numTest+numTrain)*i
+            train.extend(reslist[offset:offset+numTrain])
+            test.extend(reslist[offset+numTrain: offset+numTrain+numTest])
+        out = {"train":train,"test":test}
+        return out
+
 
 def txt_to_list(doc_ids):
     out = []
@@ -78,7 +119,8 @@ def id_to_filename(doc_ids):
     return out
 
 def main():
-    sets = select_sets_by_tag(10,2,tag_names)
+    sets = select_by_trait(10,2,tags=["Comedy","Human","Sad","Dark"])
+    #sets = select_sets_by_tag(10,2,tag_names)
     #sets = random_select_sets(30,6)
     train_tags = fetch_tags(sets["train"])
     train_texts = id_to_filename(sets["train"])#txt_to_list(sets["train"])
@@ -111,33 +153,18 @@ def main():
     test_tags_actual = fetch_tags(sets["test"])
     predicted_probs = clf.decision_function(X_test_tfidf)
     #predicted_probs = clf.get_params(X_test_tfidf)
-    print("predicted probs")
-    for i, id  in enumerate(sets["test"]):
-        doc_name = db.get_any_by_doc_ID("title",id)
-        doc_desc = db.get_any_by_doc_ID("short_description",id)
-        print("\n\nid:{}, title: {}".format(id,doc_name))
-        print(doc_desc)
-        y = [float("{:.3}".format(j)) for j in predicted_probs[i]]
-        #y = predicted_probs[i]
-        zipped = list(zip(mlb.classes_,y))
-        zipped.sort(key=lambda x: x[1],reverse=True)
+    class_list = mlb.classes_
 
-        print(zipped)
-        print("predicted: {}".format(predicted_tags_readable[i]))
-        print("actual: {}".format(test_tags_actual[i]))
-
-        #for count, tag_val in enumerate(predicted_probs[i]):
+    #retrieve top 30% for each class
+    print_predictions(sets["test"],predicted_tags_readable,class_list, class_probablities=predicted_probs)
 
 
-
-
-    #print_actual_v_predicted(sets["test"],predicted_tags_readable)
-
-def print_actual_v_predicted(test_id_set, predicted_tags_readable):
+def print_predictions(test_id_set, predicted_tags_readable, class_list, class_probablities=None):
     '''
     prints out actual vs predicted tags, as well as title and description
     :param test_id_set: list of document ids in test set
     :param predicted_tags_readable: list tags per document as plain english
+    :param: class_probabilities: list of probabilities for each class of every document. 2d
     :return: none
     '''
     test_tags = fetch_tags(test_id_set)
@@ -147,6 +174,12 @@ def print_actual_v_predicted(test_id_set, predicted_tags_readable):
         print("id: {}".format(id))
         doc_name = db.get_any_by_doc_ID("title",id)
         doc_desc = db.get_any_by_doc_ID("short_description",id)
+        if class_probablities != None:
+            y = [float("{:.3}".format(j)) for j in class_probablities[i]]
+            #y = predicted_probs[i]
+            zipped = list(zip(class_list,y))
+            zipped.sort(key=lambda x: x[1],reverse=True)
+        print(zipped)
         print("title: {}".format(doc_name))
         print("description: {}".format(doc_desc))
         print("predicted: {}".format(predicted_tags_readable[i]))

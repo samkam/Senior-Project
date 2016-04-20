@@ -328,6 +328,15 @@ class WebDB:
             return None
         else:
             return reslist[0][0]
+    def get_docIDs_by_top_trait(self, column_name):
+        sql = "SELECT fimficID from Documents ORDER BY {} DESC".format(column_name)
+        res = self.execute(sql)
+        reslist = res.fetchall()
+        if reslist == []:
+            return None
+        else:
+            z = [i[0] for i in reslist]
+            return z
     def get_all_docIDs(self):
         sql = "select fimficID from Documents"
         res = self.execute(sql)
@@ -354,6 +363,14 @@ class WebDB:
         else:
             z = [i[0] for i in reslist]
             return z
+    def docID_has_tag(self,docID,tag):
+        sql = "SELECT * from DocumentToTags where docfimficID = {} and {} = 1".format(docID,tag)
+        res = self.execute()
+        reslist = res.fetchall()
+        if reslist == []:
+            return False
+        else:
+            return True
 '''
 if __name__=='__main__':
     db = WebDB('test.db')
