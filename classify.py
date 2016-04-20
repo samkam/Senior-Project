@@ -3,6 +3,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.naive_bayes import MultinomialNB
+from sklearn import metrics
 from sklearn.svm import LinearSVC
 import WebDB
 import random
@@ -83,6 +84,7 @@ def select_by_trait(numTrain, numTest, trait_name="likes",tags=tag_names):
             offset = (numTest+numTrain)*i
             train.extend(reslist[offset:offset+numTrain])
             test.extend(reslist[offset+numTrain: offset+numTrain+numTest])
+        print("training set size:{} test set size {}".format(len(train),len(test)))
         out = {"train":train,"test":test}
         return out
 
@@ -119,8 +121,8 @@ def id_to_filename(doc_ids):
     return out
 
 def main():
-    sets = select_by_trait(10,2,tags=["Comedy","Human","Sad","Dark"])
-    #sets = select_sets_by_tag(10,2,tag_names)
+    #sets = select_by_trait(10,2,tags=["Comedy","Human","Sad","Dark"])
+    sets = select_sets_by_tag(20,4,tag_names)
     #sets = random_select_sets(30,6)
     train_tags = fetch_tags(sets["train"])
     train_texts = id_to_filename(sets["train"])#txt_to_list(sets["train"])
@@ -154,12 +156,26 @@ def main():
     predicted_probs = clf.decision_function(X_test_tfidf)
     #predicted_probs = clf.get_params(X_test_tfidf)
     class_list = mlb.classes_
-
+    report = metrics.classification_report(mlb.transform(test_tags_actual),predicted_tags,target_names=class_list)
+    print(report)
     #retrieve top 30% for each class
-    print_predictions(sets["test"],predicted_tags_readable,class_list, class_probablities=predicted_probs)
+    top_percentage = 30
+    threshold_index = int( len(sets["test"]) *(top_percentage/100.0) )
+    threshold_vals_dic = {}
+    threshold_vals = []
+    num_classes = len(class_list)
+    for i in range(num_classes):
+        z = [ predicted_probs[j,i] for j in range(len(sets["test"]))]
+        z.sort(reverse=True)
+        threshold_vals_dic[class_list[i]]= z[threshold_index]
+        threshold_vals.append(z[threshold_index])
+    print(threshold_vals_dic)
 
 
-def print_predictions(test_id_set, predicted_tags_readable, class_list, class_probablities=None):
+    print_predictions(sets["test"],predicted_tags_readable,class_list, class_probablities=predicted_probs,threshold_vals=threshold_vals)
+
+
+def print_predictions(test_id_set, predicted_tags_readable, class_list, class_probablities=None, threshold_vals=None):
     '''
     prints out actual vs predicted tags, as well as title and description
     :param test_id_set: list of document ids in test set
@@ -174,7 +190,10 @@ def print_predictions(test_id_set, predicted_tags_readable, class_list, class_pr
         print("id: {}".format(id))
         doc_name = db.get_any_by_doc_ID("title",id)
         doc_desc = db.get_any_by_doc_ID("short_description",id)
+        tags_by_threshold = []
         if class_probablities != None:
+            if threshold_vals != None:
+                tags_by_threshold = [class_list[j]  for j in range(len(class_list)) if class_probablities[i,j]> threshold_vals[j]]
             y = [float("{:.3}".format(j)) for j in class_probablities[i]]
             #y = predicted_probs[i]
             zipped = list(zip(class_list,y))
@@ -182,6 +201,7 @@ def print_predictions(test_id_set, predicted_tags_readable, class_list, class_pr
         print(zipped)
         print("title: {}".format(doc_name))
         print("description: {}".format(doc_desc))
+        print("tags predicted by threshold of top 30%: {}".format(str(tags_by_threshold)))
         print("predicted: {}".format(predicted_tags_readable[i]))
         print("actual: {}".format(test_tags[i]))
     #get labels
